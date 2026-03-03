@@ -30,17 +30,37 @@
 		<java.version>21</java.version>
 		<spring-ai.version>2.0.0-M2</spring-ai.version>
 	</properties>
+	<!--ACA EMPIEZAN LAS DEPENDENCIAS-->
 	<dependencies>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.5.0</version>
+</dependency>
+
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-math3</artifactId>
+    <version>3.6.1</version>
+</dependency>
+
+<dependency>
+    <groupId>org.ejml</groupId>
+    <artifactId>ejml-ddense</artifactId>
+    <version>0.41</version>
+</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-markdown-document-reader</artifactId>

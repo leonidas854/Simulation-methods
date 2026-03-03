@@ -8,6 +8,6 @@ public class HelloController {
 
     @GetMapping("/")
     public String hello() {
-        return "<h1>Hola mundo</h1>";
+        return "<h1>Hola mundo como estamos</h1>";
     }
 }
