@@ -1,73 +1,90 @@
 :root {
-  --bg-dark: #0a0a0c;
-  --bg-panel: #141518;
-  --text-main: #e2e8f0;
-  --text-muted: #94a3b8;
-  --cyan-accent: #06b6d4;
-  --cyan-glow: rgba(6, 182, 212, 0.4);
-  --border-color: #27272a;
+  /* Paleta Océano Suave (No neón, profesional y amigable) */
+  --bg-dark: #0f172a; /* Pizarra muy oscuro para el fondo */
+  --bg-panel: #1e293b; /* Pizarra medio para las tarjetas */
+  --text-main: #f8fafc; /* Blanco roto para el texto principal */
+  --text-muted: #94a3b8; /* Gris azulado para texto secundario */
+  --accent-color: #3b82f6; /* Azul suave (amigable, tipo SaaS) */
+  --accent-glow: rgba(59, 130, 246, 0.15); /* Sombra muy sutil */
+  --border-color: #334155; /* Bordes suaves */
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
 }
 
 body {
   background-color: var(--bg-dark);
   color: var(--text-main);
   line-height: 1.6;
+  padding: 1rem; /* Espaciado amigable para móviles */
 }
 
 .container {
-  max-w-width: 1200px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem 0;
 }
 
 header {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   text-align: center;
 }
 
 header h1 {
-  color: var(--cyan-accent);
-  font-size: 2.5rem;
-  font-weight: 600;
-  text-shadow: 0 0 10px var(--cyan-glow);
+  color: var(--accent-color);
+  font-size: clamp(
+    1.8rem,
+    5vw,
+    2.5rem
+  ); /* Se adapta al tamaño de la pantalla */
+  font-weight: 700;
   letter-spacing: -0.5px;
+  margin-bottom: 0.5rem;
 }
 
 header p {
   color: var(--text-muted);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
 }
 
+/* --- Layout Responsivo (Mobile First) --- */
 .main-grid {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 2rem;
+  grid-template-columns: 1fr; /* Una columna en celulares */
+  gap: 1.5rem;
 }
 
+@media (min-width: 992px) {
+  .main-grid {
+    grid-template-columns: 350px 1fr; /* Dos columnas en PC */
+    align-items: start;
+  }
+}
+
+/* --- Paneles (Tarjetas) --- */
 .panel {
   background-color: var(--bg-panel);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Sombra natural, no brillante */
 }
 
 .panel h2 {
   font-size: 1.25rem;
   margin-bottom: 1.5rem;
-  color: var(--cyan-accent);
+  color: var(--accent-color);
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
 }
 
+/* --- Formularios y Controles --- */
 .input-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
   display: flex;
   flex-direction: column;
 }
@@ -75,9 +92,9 @@ header p {
 .input-group label {
   font-size: 0.85rem;
   color: var(--text-muted);
-  margin-bottom: 0.25rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
 input,
@@ -86,16 +103,20 @@ select {
   border: none;
   border-bottom: 2px solid var(--border-color);
   color: var(--text-main);
-  padding: 0.5rem 0;
+  padding: 0.75rem 0; /* Altura ideal para tocar con el dedo */
   font-size: 1rem;
   outline: none;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input:focus,
 select:focus {
-  border-bottom-color: var(--cyan-accent);
-  box-shadow: 0 4px 6px -6px var(--cyan-accent);
+  border-bottom-color: var(--accent-color);
+  /* Efecto de foco amigable y moderno */
+  box-shadow: 0 4px 6px -6px var(--accent-color);
 }
 
 select option {
@@ -106,31 +127,38 @@ select option {
 .btn-primary {
   width: 100%;
   margin-top: 1.5rem;
-  padding: 0.75rem;
-  background-color: transparent;
-  border: 1px solid var(--cyan-accent);
-  color: var(--cyan-accent);
-  border-radius: 6px;
+  padding: 0.85rem;
+  background-color: var(--accent-color); /* Fondo sólido amigable */
+  border: none;
+  color: white;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s;
+  font-size: 1rem;
+  transition: all 0.2s ease;
 }
 
-.btn-primary:hover {
-  background-color: var(--cyan-accent);
-  color: var(--bg-dark);
-  box-shadow: 0 0 15px var(--cyan-glow);
+.btn-primary:hover,
+.btn-primary:active {
+  background-color: #2563eb; /* Un azul un poco más oscuro al presionar */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 
-/* Tabla y Alertas */
+/* --- Tabla de Resultados --- */
 .table-container {
   max-height: 500px;
   overflow-y: auto;
+  overflow-x: auto; /* Scroll horizontal si es necesario en móviles */
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 300px;
 }
 
 th,
@@ -138,6 +166,7 @@ td {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid var(--border-color);
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 th {
@@ -145,25 +174,34 @@ th {
   top: 0;
   background-color: var(--bg-panel);
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
+  z-index: 10;
 }
 
 td {
-  font-family: monospace;
-  font-size: 1.1rem;
+  font-family: "Courier New", Courier, monospace;
+  color: var(--text-main);
 }
 
 tr:hover {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
+/* --- Alerta de Ciclo --- */
 .alert {
-  background-color: rgba(6, 182, 212, 0.1);
-  border-left: 4px solid var(--cyan-accent);
-  padding: 1rem;
+  background-color: rgba(59, 130, 246, 0.1); /* Fondo azul muy transparente */
+  border-left: 4px solid var(--accent-color);
+  padding: 1rem 1.2rem;
   margin-bottom: 1.5rem;
   border-radius: 0 8px 8px 0;
-  color: var(--cyan-accent);
+  color: var(--text-main);
+  font-size: 0.95rem;
+}
+
+.alert strong {
+  color: var(--accent-color);
+  display: block;
+  margin-bottom: 0.25rem;
 }
 
 .hidden {
@@ -175,9 +213,10 @@ tr:hover {
   font-style: italic;
 }
 
-/* Scrollbar */
+/* --- Barras de desplazamiento (Scrollbars) amigables --- */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: var(--bg-dark);
@@ -187,5 +226,5 @@ tr:hover {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--cyan-accent);
+  background: var(--text-muted);
 }
