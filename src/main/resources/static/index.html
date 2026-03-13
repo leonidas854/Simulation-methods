@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generadores Pseudoaleatorios</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Simulation Methods</h1>
+        <p>Generación y análisis de números pseudoaleatorios</p>
+      </header>
+
+      <div class="main-grid">
+        <aside class="panel controls">
+          <h2>Parámetros</h2>
+
+          <div class="input-group">
+            <label for="metodoSelect">Seleccionar Método</label>
+            <select id="metodoSelect">
+              <option value="cuadrados-medios">Cuadrados Medios</option>
+              <option value="productos-medios">Productos Medios</option>
+              <option value="multiplicador-constante">
+                Multiplicador Constante
+              </option>
+              <option value="congruencial-mixto">Congruencial Mixto</option>
+              <option value="congruencial-multiplicativo">
+                Congruencial Multiplicativo
+              </option>
+              <option value="congruencial-aditivo">Congruencial Aditivo</option>
+              <option value="congruencial-cuadratico">
+                Congruencial Cuadrático
+              </option>
+              <option value="blum-blum-shub">Blum, Blum y Shub</option>
+            </select>
+          </div>
+
+          <form id="simForm">
+            <div id="dynamicInputs"></div>
+
+            <button type="submit" class="btn-primary">Generar Secuencia</button>
+          </form>
+        </aside>
+
+        <section class="panel results">
+          <div id="alertaCiclo" class="alert hidden">
+            <strong>¡Ciclo Detectado!</strong>
+            <span id="alertaMensaje"></span>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Iteración (i)</th>
+                  <th>Pseudoaleatorio (r_i)</th>
+                </tr>
+              </thead>
+              <tbody id="tablaResultados">
+                <tr>
+                  <td colspan="2" class="empty-state">
+                    Selecciona un método y genera la secuencia.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
