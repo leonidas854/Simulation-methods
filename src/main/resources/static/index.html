@@ -71,6 +71,327 @@
       </div>
     </div>
 
+    <div id="testingPanel" class="panel" style="margin-top: 2rem">
+      <h2>Análisis y Pruebas Estadísticas</h2>
+
+      <div
+        class="grid"
+        style="display: grid; grid-template-columns: 1fr; gap: 2rem"
+      >
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            align-items: start;
+          "
+        >
+          <div>
+            <label
+              style="
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                font-weight: 500;
+                text-transform: uppercase;
+              "
+              >1. Fuente de Datos (Max 70)</label
+            >
+            <label
+              style="
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                font-weight: 500;
+                text-transform: uppercase;
+              "
+              >1. Fuente de Datos (Max 70)</label
+            >
+            <div class="radio-group">
+              <input
+                type="radio"
+                id="rdValidos"
+                name="dataMode"
+                value="validos"
+                disabled
+              />
+              <label
+                for="rdValidos"
+                id="lblValidos"
+                style="opacity: 0.4; cursor: not-allowed"
+                >Únicos</label
+              >
+
+              <input
+                type="radio"
+                id="rdTodos"
+                name="dataMode"
+                value="todos"
+                disabled
+              />
+              <label
+                for="rdTodos"
+                id="lblTodos"
+                style="opacity: 0.4; cursor: not-allowed"
+                >Todos</label
+              >
+
+              <input
+                type="radio"
+                id="rdManual"
+                name="dataMode"
+                value="manual"
+                checked
+              />
+              <label for="rdManual">Manual</label>
+            </div>
+
+            <div id="manualInputContainer" style="margin-top: 1rem">
+              <div class="input-group" style="margin-bottom: 0.5rem">
+                <label
+                  for="manualFormat"
+                  style="font-size: 0.85rem; color: var(--text-muted)"
+                  >Formato de entrada:</label
+                >
+                <select
+                  id="manualFormat"
+                  style="
+                    padding: 0.5rem;
+                    font-size: 0.9rem;
+                    background: transparent;
+                    border-bottom: 2px solid var(--border-color);
+                    color: var(--text-main);
+                    outline: none;
+                  "
+                >
+                  <option value="matriz_coma">Matriz (Ej: 0,872 0,950)</option>
+                  <option value="matriz_punto">Matriz (Ej: 0.872 0.950)</option>
+                  <option value="comas">
+                    Lista por comas (Ej: 0.87, 0.95)
+                  </option>
+                </select>
+              </div>
+              <textarea
+                id="manualData"
+                rows="6"
+                placeholder="Pega tus números aquí..."
+                style="
+                  width: 100%;
+                  background: var(--bg-dark);
+                  border: 1px solid var(--border-color);
+                  color: var(--text-main);
+                  padding: 1rem;
+                  border-radius: 8px;
+                  font-family: monospace;
+                "
+              ></textarea>
+            </div>
+          </div>
+
+          <div>
+            <div class="input-group">
+              <label for="testSelect">2. Seleccionar Prueba</label>
+              <select id="testSelect">
+                <option value="promedios">Prueba de los Promedios</option>
+                <option value="frecuencias">Prueba de Frecuencias</option>
+                <option value="kolmogorov">Prueba de Kolmogorov-Smirnov</option>
+                <option value="series">Prueba de Series</option>
+                <option value="huecos">Prueba de Huecos</option>
+                <option value="poker">Prueba de Poker</option>
+              </select>
+            </div>
+
+            <div
+              id="testParamsContainer"
+              style="display: flex; gap: 1rem; margin-top: 1rem"
+            ></div>
+
+            <button
+              id="btnRunTest"
+              class="btn-primary"
+              style="background-color: #10b981; border: none; color: white"
+            >
+              Ejecutar Prueba
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="resultadosContainer"
+          style="
+            margin-top: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+          "
+        >
+          <div id="testAlert" class="alert hidden"></div>
+
+          <div id="view-promedios" class="test-view">
+            <div class="test-table-container">
+              <table id="table-promedios">
+                <thead></thead>
+                <tbody>
+                  <tr>
+                    <td class="empty-state">Esperando ejecución...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div
+              style="
+                background: var(--bg-dark);
+                padding: 1rem;
+                border-radius: 8px;
+                margin-top: 1rem;
+              "
+            >
+              <canvas id="chart-promedios"></canvas>
+            </div>
+          </div>
+
+          <div id="view-frecuencias" class="test-view hidden">
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1rem;
+              "
+            >
+              <div class="test-table-container">
+                <table id="table-frecuencias">
+                  <thead></thead>
+                  <tbody>
+                    <tr>
+                      <td class="empty-state">Esperando ejecución...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div
+                style="
+                  background: var(--bg-dark);
+                  padding: 1rem;
+                  border-radius: 8px;
+                "
+              >
+                <canvas id="chart-frecuencias"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div id="view-kolmogorov" class="test-view hidden">
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1rem;
+              "
+            >
+              <div class="test-table-container">
+                <table id="table-kolmogorov">
+                  <thead></thead>
+                  <tbody>
+                    <tr>
+                      <td class="empty-state">Esperando ejecución...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div
+                style="
+                  background: var(--bg-dark);
+                  padding: 1rem;
+                  border-radius: 8px;
+                "
+              >
+                <canvas id="chart-kolmogorov"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div id="view-series" class="test-view hidden">
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1rem;
+              "
+            >
+              <div>
+                <div class="test-table-container">
+                  <table id="table-series">
+                    <thead></thead>
+                    <tbody>
+                      <tr>
+                        <td class="empty-state">Esperando ejecución...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="test-table-container" style="margin-top: 1rem">
+                  <table
+                    id="matrix-fo"
+                    style="width: 100%; text-align: center"
+                  ></table>
+                </div>
+              </div>
+              <div
+                style="
+                  background: var(--bg-dark);
+                  padding: 1rem;
+                  border-radius: 8px;
+                "
+              >
+                <canvas id="chart-series"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div id="view-huecos" class="test-view hidden">
+            <div
+              style="
+                background: var(--bg-dark);
+                padding: 1rem;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+                font-family: monospace;
+                color: var(--text-main);
+              "
+            >
+              <strong>Secuencia S: </strong
+              ><span id="huecos-secuencia" style="color: var(--accent-color)"
+                >Esperando ejecución...</span
+              >
+            </div>
+            <div class="test-table-container">
+              <table id="table-huecos">
+                <thead></thead>
+                <tbody>
+                  <tr>
+                    <td class="empty-state">Esperando ejecución...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div id="view-poker" class="test-view hidden">
+            <div id="poker-grid-container" style="margin-bottom: 1.5rem"></div>
+
+            <div class="test-table-container">
+              <table id="table-poker">
+                <thead></thead>
+                <tbody>
+                  <tr>
+                    <td class="empty-state">Esperando ejecución...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script src="script.js"></script>
   </body>
 </html>

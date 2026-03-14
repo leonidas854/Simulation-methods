@@ -106,7 +106,7 @@ public class GeneratorsService {
             fila.put("Xn", xn);
             long formula = a * xn;
             fila.put("aXn", formula);
-            fila.put("division", formula + " / " + m);
+            fila.put("division", formula + " mod " + m);
             long xn_1 = formula % m;
             fila.put("Xn_1", xn_1);
             fila.put("un", (double) xn_1 / m);
@@ -130,7 +130,7 @@ public class GeneratorsService {
             fila.put("i", i + 1+1);
             fila.put("Xi", x_in); // Semilla principal de esa iteración según tu documento
             fila.put("suma", suma);
-            fila.put("division", suma + " / " + m);
+            fila.put("division", suma + " mod " + m);
             long nuevoX = suma % m;
             fila.put("Xi_1", nuevoX);
             fila.put("ri", (double) nuevoX / m);
@@ -149,7 +149,7 @@ public class GeneratorsService {
             fila.put("Xi", xi);
             long formula = a * (xi * xi) + b * xi + c;
             fila.put("formula", formula);
-            fila.put("division", formula + " / " + m);
+            fila.put("division", formula + " mod " + m);
             long xi_1 = formula % m;
             fila.put("Xi_1", xi_1);
             fila.put("ri", (double) xi_1 / m);
@@ -168,7 +168,7 @@ public class GeneratorsService {
             fila.put("Xi", xi);
             long formula = xi * xi;
             fila.put("formula", formula);
-            fila.put("division", formula + " / " + m);
+            fila.put("division", formula + " mod " + m);
             long xi_1 = formula % m;
             fila.put("Xi_1", xi_1);
             fila.put("ri", (double) xi_1 / m); 
