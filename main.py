@@ -22,13 +22,19 @@ class InversaCompletaPayload(BaseModel):
     cantidad: int
     segmentos: List[Segmento]
 
-class AceptacionPayload(BaseModel):
-    cantidad: int
-    funcion_f: str
+
+class SegmentoAR(BaseModel):
+    f_x: str
     a: float
     b: float
-    M: float
-    parametros: Optional[Dict[str, float]] = None
+
+class AceptacionPayload(BaseModel):
+    segmentos: List[SegmentoAR]     
+    M: Optional[float] = None      
+    modo: str                       
+    cantidad: Optional[int] = None
+    numeros_r1: Optional[List[float]] = None
+    numeros_r2: Optional[List[float]] = None 
 
 class ComposicionPayload(BaseModel):
     cantidad: int
@@ -162,55 +168,151 @@ def inversa_analitica(payload: InversaCompletaPayload):
 
 @app.post("/api/simulacion/aceptacion-rechazo")
 def aceptacion_rechazo(payload: AceptacionPayload):
-    """ Función 2: Método de Aceptación y Rechazo General """
-    x_sym = sp.Symbol('x')
-    expr = sp.sympify(payload.funcion_f)
+    x = sp.Symbol('x', real=True)
+    R1 = sp.Symbol('R1', real=True)
     
-    if payload.parametros:
-        expr = expr.subs(payload.parametros)
+    tramos_procesados = []
+    limite_A = float('inf')   
+    limite_B = float('-inf')  
+    M_calculado = 0.0         
+    
+    # ==========================================
+    # 1. ANÁLISIS DE FUNCIONES Y MÁXIMO GLOBAL (M)
+    # ==========================================
+    for seg in payload.segmentos:
+        # Sympify ESTÁNDAR (Debes mandar el '*' explícitamente)
+        expr_f = sp.sympify(seg.f_x, locals={'x': x}, rational=True)
+        f_fast = sp.lambdify(x, expr_f, "math")
         
-    f_fast = sp.lambdify(x_sym, expr, "math")
+        # Encontrar límites globales
+        if seg.a < limite_A: limite_A = seg.a
+        if seg.b > limite_B: limite_B = seg.b
+            
+        # Calcular el máximo local de ESTA función (para descartar las más bajas luego)
+        paso = (seg.b - seg.a) / 1000.0
+        max_tramo = 0.0
+        for i in range(1001):
+            x_val = seg.a + (i * paso)
+            y_val = float(f_fast(x_val))
+            if y_val > max_tramo:
+                max_tramo = y_val
+                
+        if max_tramo > M_calculado:
+            M_calculado = max_tramo
+            
+        tramos_procesados.append({
+            "a": seg.a,
+            "b": seg.b,
+            "expr_sym": expr_f,
+            "f_fast": f_fast,
+            "max_tramo": round(max_tramo, 4)
+        })
+
+    # Elegir M: el que enviaste, o el máximo global calculado
+    M_final = payload.M if payload.M is not None else M_calculado
+
+    # ==========================================
+    # 2. LOS 5 PASOS ALGEBRAICOS (Como en tu foto)
+    # ==========================================
+    # Fórmula base: X* = a + (b-a)R1
+    X_est_sym = limite_A + (limite_B - limite_A) * R1
+    str_x_estrella = str(sp.simplify(X_est_sym))
     
-    tabla = []
+    pasos_desarrollo = []
+    for tramo in tramos_procesados:
+        f_sym = tramo["expr_sym"]
+        
+        # Sustituimos la X de la función por la fórmula de R1
+        f_x_est_sym = sp.simplify(f_sym.subs(x, X_est_sym))
+        
+        # Dividimos entre M
+        f_x_m_sym = sp.simplify(f_x_est_sym / M_final)
+        
+        pasos_desarrollo.append({
+            "tramo": f"[{tramo['a']}, {tramo['b']}]",
+            "maximo_detectado_aqui": tramo["max_tramo"],
+            "Paso_1": f"M = {round(M_final, 4)}",
+            "Paso_2": f"X* = {limite_A} + ({limite_B} - {limite_A})R1  =>  X* = {str_x_estrella}",
+            "Paso_3": f"f(X*) = {f_x_est_sym}",
+            "Paso_4": f"f(X*)/M = {f_x_m_sym}",
+            "Paso_5": f"Condición: R2 <= {f_x_m_sym}"
+        })
+
+    def evaluar_fx(x_est):
+        for tramo in tramos_procesados:
+            if tramo["a"] <= x_est <= tramo["b"]:
+                return float(tramo["f_fast"](x_est))
+        return 0.0 
+
+    # ==========================================
+    # 3. GENERACIÓN NUMÉRICA (CON ITERACIÓN 0)
+    # ==========================================
+    # Tu solicitud explícita: Iteración 0 con variables
+    tabla = [{
+        "N": 0,
+        "R1": "R1",
+        "R2": "R2",
+        "X_estrella": str_x_estrella,
+        "f_X_estrella": "f(X*)",
+        "f_X_sobre_M": "f(X*)/M",
+        "Condicion": "R2 <= f(X*)/M",
+        "Estado": "-",
+        "X_i": "-"
+    }]
+    
     generados = []
     intentos = 0
-    cantidad_limite = min(payload.cantidad, 1000)
+    idx_manual = 0
     
-    while len(generados) < cantidad_limite:
+    lista_r1 = payload.numeros_r1 or []
+    lista_r2 = payload.numeros_r2 or []
+    cantidad_objetivo = payload.cantidad or 5 
+
+    while len(generados) < cantidad_objetivo and intentos < 2000:
         intentos += 1
-        r1 = random.random()
-        r2 = random.random()
         
-        # x* = a + (b-a)R1
-        x_estrella = payload.a + (payload.b - payload.a) * r1
-        
-        # f(x*)
-        f_x = f_fast(x_estrella)
-        
-        # Condición: R2 <= f(x*) / M
-        aceptado = r2 <= (f_x / payload.M)
+        if idx_manual < len(lista_r1) and idx_manual < len(lista_r2):
+            r1 = lista_r1[idx_manual]
+            r2 = lista_r2[idx_manual]
+            idx_manual += 1
+        else:
+            if payload.modo.lower() == "manual":
+                break 
+            
+            r1 = round(random.random(), 5)
+            r2 = round(random.random(), 5)
+
+        x_estrella = limite_A + (limite_B - limite_A) * r1
+        f_x_est = evaluar_fx(x_estrella)
+        f_x_m = f_x_est / M_final
+        aceptado = r2 <= f_x_m
         
         tabla.append({
-            "Intento": intentos,
-            "R1": r1,
+            "N": intentos, 
+            "R1": r1, 
             "R2": r2,
-            "x_estrella": x_estrella,
-            "f_x": f_x,
-            "Estado": "ACEPTADO" if aceptado else "RECHAZADO"
+            "X_estrella": round(x_estrella, 4),
+            "f_X_estrella": round(f_x_est, 4),
+            "f_X_sobre_M": round(f_x_m, 4),
+            "Condicion": f"{r2} <= {round(f_x_m, 4)}",
+            "Estado": "Acepta" if aceptado else "Rechaza",
+            "X_i": round(x_estrella, 4) if aceptado else "-"
         })
         
-        if aceptado:
-            generados.append(x_estrella)
-            
+        if aceptado: 
+            generados.append(round(x_estrella, 4))
+
     return {
-        "metodo": "Aceptación-Rechazo",
+        "metodo": "Aceptación y Rechazo",
+        "A_global": limite_A,
+        "B_global": limite_B,
+        "M_utilizado": round(M_final, 5),
+        "pasos_algebraicos": pasos_desarrollo,
         "total_intentos": intentos,
-        "eficiencia_porcentaje": round((cantidad_limite / intentos) * 100, 2),
+        "aceptados": len(generados),
         "tabla": tabla,
-        "generados": generados
+        "generados_finales": generados
     }
-
-
 @app.post("/api/simulacion/composicion")
 def composicion(payload: ComposicionPayload):
     """ Función 3: Método de Composición General """
