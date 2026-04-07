@@ -1,10 +1,19 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 import sympy as sp
 import random
 
 app = FastAPI(title="API de Simulación - Variables Aleatorias")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class PuntosPayload(BaseModel):
@@ -148,7 +157,8 @@ def inversa_analitica(payload: InversaCompletaPayload):
         # Buscar en qué tramo cae R
         for fg in funciones_generadoras:
             if r_val <= fg["R_max"]:
-                x_simulado = fg["funcion"](r_val)
+                val_crudo = fg["funcion"](r_val)
+                x_simulado = float(complex(val_crudo).real)
                 tramo_usado = fg["tramo"]
                 break
                 
@@ -156,7 +166,8 @@ def inversa_analitica(payload: InversaCompletaPayload):
             "i": i + 1,
             "R": round(r_val, 5),
             "tramo": tramo_usado,
-            "x_simulado": round(x_simulado, 5) if x_simulado else None
+            # FIX 2: Usar "is not None" para que los 0.0 no se conviertan en "None" en tu tabla
+            "x_simulado": round(x_simulado, 5) if x_simulado is not None else None
         })
         if x_simulado is not None:
             generados.append(x_simulado)
